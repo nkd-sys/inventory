@@ -7,9 +7,19 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Inventory & Order Management API", version="1.0.0")
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://helpful-travesseiro-b82b98.netlify.app/",    # replace with your actual Netlify URL
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
