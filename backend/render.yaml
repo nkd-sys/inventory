@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: inventory-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # you'll paste this from Render's Postgres dashboard
+      - key: ALLOWED_ORIGINS
+        sync: false          # you'll paste your Netlify URL here
