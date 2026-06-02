@@ -7,15 +7,35 @@ function StatCard({ icon: Icon, label, value, color }) {
   return (
     <Card style={{ padding: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: 10, background: color + '1a',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>
+        <div
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 10,
+            background: color + '1a',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
           <Icon size={20} color={color} />
         </div>
         <div>
-          <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</div>
-          <div style={{ fontSize: 28, fontWeight: 700, fontFamily: 'var(--mono)', lineHeight: 1.2 }}>{value}</div>
+          <div
+            style={{
+              fontSize: 11,
+              color: 'var(--muted)',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+            }}
+          >
+            {label}
+          </div>
+          <div style={{ fontSize: 28, fontWeight: 700, fontFamily: 'var(--mono)', lineHeight: 1.2 }}>
+            {value}
+          </div>
         </div>
       </div>
     </Card>
@@ -25,14 +45,31 @@ function StatCard({ icon: Icon, label, value, color }) {
 export default function Dashboard() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     getDashboardStats()
-      .then(r => setStats(r.data))
+      .then((r) => setStats(r.data))
+      .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [])
 
   if (loading) return <Spinner />
+
+  if (error) {
+    return (
+      <div style={{ padding: 48, textAlign: 'center', color: 'var(--warn)' }}>
+        ⚠️ Could not connect to backend.<br />
+        <span style={{ color: 'var(--muted)', fontSize: 12 }}>
+          Check that VITE_API_URL is set correctly in Netlify environment variables.
+        </span>
+      </div>
+    )
+  }
+
+  if (!stats) return <Spinner />
+
+  const lowStockProducts = stats.low_stock_products || []
 
   return (
     <div>
@@ -48,12 +85,21 @@ export default function Dashboard() {
       </div>
 
       <Card>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div
+          style={{
+            padding: '16px 20px',
+            borderBottom: '1px solid var(--border)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
           <AlertTriangle size={14} color="var(--warn)" />
           <span style={{ fontWeight: 600, fontSize: 13 }}>Low Stock Products</span>
-          <Badge color="var(--warn)">{stats.low_stock_products.length}</Badge>
+          <Badge color="var(--warn)">{lowStockProducts.length}</Badge>
         </div>
-        {stats.low_stock_products.length === 0 ? (
+
+        {lowStockProducts.length === 0 ? (
           <div style={{ padding: 32, textAlign: 'center', color: 'var(--muted)', fontSize: 13 }}>
             ✓ All products are sufficiently stocked
           </div>
@@ -68,12 +114,18 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {stats.low_stock_products.map(p => (
+              {lowStockProducts.map((p) => (
                 <tr key={p.id}>
                   <td style={{ fontWeight: 500 }}>{p.name}</td>
-                  <td><span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)' }}>{p.sku}</span></td>
+                  <td>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)' }}>
+                      {p.sku}
+                    </span>
+                  </td>
                   <td style={{ fontFamily: 'var(--mono)' }}>₹{p.price.toFixed(2)}</td>
-                  <td><Badge color="var(--warn)">{p.quantity} left</Badge></td>
+                  <td>
+                    <Badge color="var(--warn)">{p.quantity} left</Badge>
+                  </td>
                 </tr>
               ))}
             </tbody>
