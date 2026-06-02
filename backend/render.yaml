@@ -7,6 +7,6 @@ services:
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
-        sync: false          # you'll paste this from Render's Postgres dashboard
+        sync: postgresql://inventorydb_y6kt_user:25kAEeKbdC8C4wsppgNblIaELJoHgxZp@dpg-d8ev8od53gjs739ga610-a/inventorydb_y6kt          
       - key: ALLOWED_ORIGINS
-        sync: false          # you'll paste your Netlify URL here
+        sync: https://helpful-travesseiro-b82b98.netlify.app/         # you'll paste your Netlify URL here

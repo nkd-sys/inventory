@@ -8,7 +8,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Inventory & Order Management API", version="1.0.0")
 
-origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+origins = os.getenv("ALLOWED_ORIGINS", "https://helpful-travesseiro-b82b98.netlify.app/").split(",")
 
 app.add_middleware(
     CORSMiddleware,
